@@ -998,7 +998,7 @@
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
-          "legendFormat": "",
+          "legendFormat": "{{displayName}}",
           "refId": "A"
         }
       ],
