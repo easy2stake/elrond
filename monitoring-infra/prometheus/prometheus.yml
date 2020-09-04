@@ -17,17 +17,7 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['nodeexporter:9100']
-        labels:
-          source: 'localhost'
-          metricsrc: 'nodeexporter'
-      - targets: ['95.217.36.182:33903']
-        labels:
-          source: 'elrond-bon-vm'
-          metricsrc: 'easy2stake-exporter'
-      - targets: ['95.217.36.182:33905']
-        labels:
-          source: 'elrond-mainnet1'
-          metricsrc: 'easy2stake-exporter'
+
   - job_name: 'prometheus'
     scrape_interval: 10s
     static_configs:
