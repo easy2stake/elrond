@@ -24,7 +24,7 @@ REMOTE_METRICS=1
 OBSERVER_URL="https://api.elrond.com"
 IDENTITY="YOUR-GITHUB-IDENTITY-HERE" # Edit this with your own identity
 ```
-More details on the variables [here](https://github.com/easy2stake/elrond/blob/master/README.md)
+More details on the variables [here](https://github.com/easy2stake/elrond/blob/master/README.md).
 **Do not run REMOTE_METRICS=1 on the same machine as your validator.** Remote metrics tend to be CPU intensive if your identity hides more than 5-10 nodes.
 
 ```sh

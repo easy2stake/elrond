@@ -11,8 +11,8 @@
 #IDENTITY=$E_IDENTITY
 #OBSERVER_URL=${E_OBSERVER_URL:="https://api.elrond.com"}
 
-LOCAL_METRICS=1 #Enable local metrics
-LOCAL_NODES=(127.0.0.1:8080)  #Insert your own nodes inside the paranthesis
+LOCAL_METRICS=0 #Enable local metrics
+LOCAL_NODES=(http://rpc-url:8080 http://rpc-url:8081)  #Insert your own nodes inside the paranthesis
 REMOTE_METRICS=1
 OBSERVER_URL="https://api.elrond.com"
 IDENTITY="YOUR-GITHUB-IDENTITY-HERE" # Edit this with your own identity
