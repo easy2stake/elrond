@@ -70,53 +70,6 @@ Add a cron job to write metrics to collector directory configured in node_export
 * * * * * /absolute/path/to/elrond-exporter.sh > /var/local/prometheus-metrics/elrond-exporter.prom
 ```
 
-### Alternative run
-As an alternative, a webserver can be used to host and serve over http the metrics page.
-
-Here is a very simple example using http module of python3. This is only for testing purposes, do not open the ports to the internet. No security considerations are taken into account.
-
-```sh
-#! /bin/bash
-mkdir -p data
-
-cd data
-python3 -m  http.server 8000 &
-
-cd ..
-while :
-do
-    bash elrond-metrics.sh > temp-metrics
-    mv temp-metrics data/metrics
-    sleep 10
-done
-
-```
-# Docker Compose
-Create the infrastructure
-```sh
-ADMIN_USER=admin ADMIN_PASSWORD=admin docker-compose up -d
-```
-Remove the infrastructure:
-```sh
-ADMIN_USER=admin ADMIN_PASSWORD=admin docker-compose down
-```
-
-
 # Future
 
 A go / python version of this exporter would be ideal.
-
-
-Docker run:
-
-docker stop elrond-exporter
-docker rm elrond-exporter
-
-docker run -itd --init \
-                --name elrond-exporter \
-                -e IDENTITY=easy2stake \
-                -e LOCAL_METRICS=0 \
-                -e REMOTE_METRICS=1 \
-                -e OBSERVER_URL="https://api.elrond.com" \
-                -p 127.0.0.1:8000:8000 \
-                elrond-exporter

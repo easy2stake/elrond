@@ -15,7 +15,7 @@ LOCAL_METRICS=1 #Enable local metrics
 LOCAL_NODES=(127.0.0.1:8080)  #Insert your own nodes inside the paranthesis
 REMOTE_METRICS=1
 OBSERVER_URL="https://api.elrond.com"
-IDENTITY="easy2stake" # Edit this with your own identity
+IDENTITY="YOUR-GITHUB-IDENTITY-HERE" # Edit this with your own identity
 
 # LOCAL_NODES: Array containing the nodes you want to generate local metrics from.
 if [[ -z "$LOCAL_NODES" ]]; then LOCAL_METRICS=0; fi
