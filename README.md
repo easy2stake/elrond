@@ -10,7 +10,7 @@ Please keep in mind that this is only an exporter. A complete working setup requ
 - An existing Prometheus installation
 - Prometheus Node Exporter installed on the host running the elrond-exporter.sh script
 
-**Check out our complete Grafana, Prometheus solution [here](https://github.com/easy2stake/elrond/tree/master/monitoring-infra).**
+### **Check out our complete Grafana, Prometheus solution [here](https://github.com/easy2stake/elrond/tree/master/monitoring-infra).**
 # How to use it
 
 ## 1. Set the Variables
@@ -19,7 +19,7 @@ The script collects two types of metrics:
 - **Local metrics:** Metrics collected from your node RPC/node/status page.
 - **Remote metrics:** Metrics collected using an OBSERVER_URL
 
-The only variable that MUST be setup in order to run the script is E_IDENTITY:
+The only variable that MUST be setup in order to run the script is IDENTITY:
 ```sh
 #Example:
 IDENTITY=easy2stake
@@ -36,7 +36,7 @@ LOCAL_NODES=(http://rpc-url:8080 http://rpc-url:8081)
 **Variables explained:**
 - **LOCAL_METRICS:** Enable (1) or disable (0) the local metrics collection. By default this is set to 0
 - **LOCAL_NODES:** Array with each one of the node RPC that you want to collect local metrics from
-- **REMOTE_METRICS:** Enable (1) or disable (0) the remote metrics collection. By default this is set to 1. DO NOT ENABLE this metrics if you are running the script on the same machine as your validator. It can impact validator performance.
+- **REMOTE_METRICS:** Enable (1) or disable (0) the remote metrics collection. By default this is set to 1. DO NOT ENABLE this metrics if you are running the script on the same machine as your validator. **It can impact validator performance.**
 - **OBSERVER_URL:** The observer to be used in order to collect the REMOTE_METRCS from. By default this is set to https://api.elrond.com
 - **IDENTITY:** Your keybase identity. This is a mandatory variable.
 
