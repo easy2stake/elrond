@@ -2,8 +2,9 @@
 
 ### 1. Install dependencies
 ```sh
+sudo apt update && apt install git jq curl -y
 sudo curl -sSL https://get.docker.com/ | sh
-sudo apt update && apt install git jq docker-compose
+sudo apt install docker-compose -y
 
 #Optionally: Create a new user and enter it\'s home directory
 sudo useradd -m -s /bin/bash monitor
@@ -54,3 +55,5 @@ ADMIN_USER=admin ADMIN_PASSWORD=admin docker-compose down
 
 Access your grafana dashboard using the default credentials (admin/admin) here:
 http://your-ip-address:13000
+
+**Reach us on telegram:** https://t.me/easy2stake

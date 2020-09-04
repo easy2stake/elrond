@@ -70,3 +70,5 @@ Add a cron job to write metrics to collector directory configured in node_export
 
 # Future
 A go / python implementation of this exporter.
+
+**Reach us on telegram:** https://t.me/easy2stake
