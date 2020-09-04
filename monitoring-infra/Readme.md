@@ -44,3 +44,6 @@ Remove the infrastructure:
 ```sh
 ADMIN_USER=admin ADMIN_PASSWORD=admin docker-compose down
 ```
+
+Access your grafana dashboard using the default credentials (admin/admin) here:
+http://your-ip-address:13000
