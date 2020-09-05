@@ -90,4 +90,5 @@ There are plenty of guides out there about alerts on Grafana. We can link extern
 **Credits:**
 
 Credits for the original docker-compose setup: (here) [https://github.com/stefanprodan/dockprom]
+
 **Reach us on telegram:** https://t.me/easy2stake
