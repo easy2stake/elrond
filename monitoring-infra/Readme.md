@@ -87,7 +87,7 @@ We prefer telegram bots to send alerts to but the possibilities are endless.
 There are plenty of guides out there about alerts on Grafana. We can link external references here if requested.
 
 #### Credits:
-Credits for the original docker-compose setup: (here) [https://github.com/stefanprodan/dockprom]
+Credits for the original docker-compose setup: [here] (https://github.com/stefanprodan/dockprom)
 
 #### Contact:
 **Reach us on telegram:** https://t.me/easy2stake
