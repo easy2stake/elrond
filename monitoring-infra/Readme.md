@@ -46,6 +46,7 @@ Create the infrastructure using:
 cd $HOME/elrond/monitoring-infra
 ADMIN_USER=admin ADMIN_PASSWORD=admin docker-compose up -d
 ```
+**Attention:** Your grafana and prometheus instances will be accessible from the internet. We recommend to use a STRONG password.
 
 Remove the infrastructure using:
 ```sh
@@ -53,8 +54,9 @@ cd $HOME/elrond/monitoring-infra
 docker-compose down
 ```
 
-Access your grafana dashboard using the default credentials (admin/admin) here:
-http://your-ip-address:13000
+Access your dashboards using the default credentials (admin/admin) here:
+- Grafana: http://your-ip-address:13000
+- Prometheus: http://your-ip-address:19090
 
 ### 4. More customisation
 
