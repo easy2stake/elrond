@@ -54,9 +54,10 @@ cd $HOME/elrond/monitoring-infra
 docker-compose down
 ```
 
-Access your dashboards using the default credentials (admin/admin) here:
+Access your dashboards here:
 - Grafana: http://your-ip-address:13000
 - Prometheus: http://your-ip-address:19090
+Grafana default credentials are admin/admin. It will ask for a password change when you first login.
 
 ### 4. More customisation
 
