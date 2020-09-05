@@ -1,6 +1,8 @@
 # Description
 A bash script collecting data from Elrond nodes and printing them out in a Prometheus metrics format.
 
+![Elrond Grafana Dashboard](img/local.png)
+
 It started as a simple metric exporter used during the battle-of-nodes and with each necessity we added more and more metrics. The slow execution time of bash results in low performance when exporting metrics for more than 10 nodes. It also depends on the host machine.
 
 On a dual-core, HT enabled VM the performance collecting remote metrics for 10 nodes is around 4 seconds on average.
@@ -17,7 +19,10 @@ Please keep in mind that this is only an exporter. A complete working setup requ
 
 The script collects two types of metrics:
 - **Local metrics:** Metrics collected from your node RPC/node/status page.
+![Elrond Grafana Dashboard](img/local.png)
+
 - **Remote metrics:** Metrics collected using an OBSERVER_URL
+![Elrond Grafana Dashboard](img/remote.png)
 
 The only variable that MUST be setup in order to run the script is IDENTITY:
 ```sh
