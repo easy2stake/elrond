@@ -59,7 +59,6 @@ http://your-ip-address:13000
 ### 4. More customisation
 
 #### Adding remote endpoints:
-
 By default, prometheus only scrapes the local nodeexporter instance. In order to scrape metrics from remote sources the prometheus.yml configuration file must be edited. Let's say we want to collect metrics from "http://my-remote-metrics1:9100" and "http://my-remote-metrics2:9100":
 ```sh
 cd $HOME/elrond/monitoring-infra/prometheus
@@ -84,11 +83,11 @@ docker restart prometheus
 ```
 
 #### Alerting:
-
-There are plenty of guides out there about alerts on Grafana. We can link external references here. We prefer telegram bots to send alerts to but the possibilities are endless.
+We prefer telegram bots to send alerts to but the possibilities are endless.
+There are plenty of guides out there about alerts on Grafana. We can link external references here if requested.
 
 #### Credits:
-
 Credits for the original docker-compose setup: (here) [https://github.com/stefanprodan/dockprom]
 
+#### Contact:
 **Reach us on telegram:** https://t.me/easy2stake
