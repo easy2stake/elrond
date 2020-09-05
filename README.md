@@ -1,5 +1,5 @@
 # Description
-A bash script collecting data from Elrond nodes and printing them out in a Prometheus metrics format.
+Easy to use, customizable, bash script collecting data from Elrond nodes and printing them in a Prometheus compatible format.
 
 ![Elrond Grafana Dashboard](./img/local.PNG)
 
