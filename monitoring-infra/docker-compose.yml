@@ -78,8 +78,6 @@ services:
     ports:
       - "13000:3000"
       - "19090:9090"
-      - "19093:9093"
-      - "19091:9091"
     volumes:
       - ./caddy:/etc/caddy
     environment:
