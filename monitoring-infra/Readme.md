@@ -2,7 +2,7 @@
 
 ### 1. Install dependencies
 ```sh
-sudo apt update && apt install git jq curl -y
+sudo apt update && sudo apt install git jq curl -y
 sudo curl -sSL https://get.docker.com/ | sh
 sudo apt install docker-compose -y
 
@@ -10,11 +10,15 @@ sudo apt install docker-compose -y
 sudo useradd -m -s /bin/bash monitor
 sudo usermod -aG docker monitor
 sudo su - monitor
+
+#If you skipped the optional step above, make sure your current user has access rights to Docker
+sudo usermod -aG docker $(whoami)
 ```
+
 
 ### 2. Clone the repository and customize the configuration files
 ```sh
-git clone https://github.com/easy2stake/elrond
+cd $HOME && git clone https://github.com/easy2stake/elrond
 cd elrond/
 nano elrond-exporter.sh #use your preferred file editor here
 
@@ -23,7 +27,7 @@ LOCAL_METRICS=0 #Enable local metrics
 LOCAL_NODES=(URL1 URL2 URL3)  #Insert your validator node RPC URLs inside the parenthesis separated by space
 REMOTE_METRICS=1
 OBSERVER_URL="https://api.elrond.com"
-IDENTITY="YOUR-GITHUB-IDENTITY-HERE" # Edit this with your own identity
+IDENTITY="YOUR-KEYBASE-IDENTITY-HERE" # Edit this with your own identity
 ```
 More details on the variables [here](https://github.com/easy2stake/elrond/blob/master/README.md).
 **Do not run REMOTE_METRICS=1 on the same machine as your validator.** Remote metrics tend to be CPU intensive if your identity hides more than 5-10 nodes.
