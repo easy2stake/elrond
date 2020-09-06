@@ -6,7 +6,7 @@ sudo apt update && sudo apt install git jq curl -y
 sudo curl -sSL https://get.docker.com/ | sh
 sudo apt install docker-compose -y
 
-#Optionally: Create a new user and enter it\'s home directory
+#Optionally: Create a new user and enter it's home directory
 sudo useradd -m -s /bin/bash monitor
 sudo usermod -aG docker monitor
 sudo su - monitor
