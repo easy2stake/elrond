@@ -14,7 +14,7 @@
 LOCAL_METRICS=0 #Enable local metrics
 LOCAL_NODES=(http://rpc-url:8080 http://rpc-url:8081)  #Insert your own nodes inside the paranthesis
 REMOTE_METRICS=1
-OBSERVER_URL="https://api.elrond.com"
+OBSERVER_URL="https://api.elrond.com" # The observer must be on meta chain in order to work.
 IDENTITY="YOUR-KEYBASE-IDENTITY-HERE" # Edit this with your own identity
 
 # LOCAL_NODES: Array containing the nodes you want to generate local metrics from.
