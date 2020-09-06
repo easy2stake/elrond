@@ -26,7 +26,7 @@ nano elrond-exporter.sh #use your preferred file editor here
 LOCAL_METRICS=0 #Enable local metrics
 LOCAL_NODES=(URL1 URL2 URL3)  #Insert your validator node RPC URLs inside the parenthesis separated by space
 REMOTE_METRICS=1
-OBSERVER_URL="https://api.elrond.com"
+OBSERVER_URL="https://api.elrond.com" # The observer must be on meta chain in order to work.
 IDENTITY="YOUR-KEYBASE-IDENTITY-HERE" # Edit this with your own identity
 ```
 More details on the variables [here](https://github.com/easy2stake/elrond/blob/master/README.md).
