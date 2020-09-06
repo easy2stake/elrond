@@ -12,7 +12,8 @@ Please keep in mind that this is only an exporter. A complete working setup requ
 - An existing Prometheus installation
 - Prometheus Node Exporter installed on the host running the elrond-exporter.sh script
 
-### **Check out our complete Grafana, Prometheus solution [here](https://github.com/easy2stake/elrond/tree/master/monitoring-infra).**
+## If you want to skip the details check our complete, [EASY to install monitoring setup](https://github.com/easy2stake/elrond/tree/master/monitoring-infra).
+
 # How to use it
 
 ## 1. Set the Variables
