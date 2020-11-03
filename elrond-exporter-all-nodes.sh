@@ -128,12 +128,19 @@ then
   # Collect all elrond data and store it inside buffers avoiding unecessary calls
   bufHB=$(curl -m 5 -s ${OBSERVER_URL}/node/heartbeatstatus)
   allBufStats=$(curl -m 5 -s ${OBSERVER_URL}/validator/statistics) #Should curl only once
-  myNodesHB=$(jq ".data.heartbeats[] | select (.identity==\"$IDENTITY\")" -c <<< $bufHB)
+  ####################### ALL NODES #######################
+  allNodesHB=$(jq ".data.heartbeats[]" -c <<< $bufHB)
 
-  for i in $(echo "$myNodesHB")
+  for i in $(echo "$allNodesHB")
   do
-    read r_displayName r_identity r_validatorPubkey r_isActive r_totalUpTimeSec r_totalDownTimeSec r_peerType r_receivedShardID r_computedShardID r_nonce\
-    < <(echo $(jq '.nodeDisplayName, .identity, .publicKey, .isActive, .totalUpTimeSec, .totalDownTimeSec, .peerType, .receivedShardID, .computedShardID, .nonce' -r <<< $i))
+    if [[ -z $(jq '.identity' -r <<< $i) || $(jq '.identity' -r <<< $i) == "null" ]]; then continue; fi
+    if [[ -z $(jq '.nodeDisplayName' -r <<< $i) || $(jq '.nodeDisplayName' -r <<< $i) == "null" ]]; then continue; fi
+
+    read  r_validatorPubkey r_isActive r_totalUpTimeSec r_totalDownTimeSec r_peerType r_receivedShardID r_computedShardID r_nonce\
+    < <(echo $(jq '.publicKey, .isActive, .totalUpTimeSec, .totalDownTimeSec, .peerType, .receivedShardID, .computedShardID, .nonce' -r <<< $i))
+
+    read r_displayName r_identity\
+    < <(echo $(jq '.nodeDisplayName, .identity' -r <<< $i))
 
     #r_isActive=$(jq '.isActive' -r <<< $i) # This echoes true or false. Must convert to 1/0
     grep -i true <<< $r_isActive 2>&1 > /dev/null
@@ -161,29 +168,30 @@ then
 
     #echo "elrond_node_r_max_inactive_time{$metricLabels} $r_maxInactiveTime" #Must be converted to seconds. The actual format is not prometheus friendly
     # Exporting validator prometheus merics. Do not calculate for observers.
-    if [[ $r_peerType != "observer" ]]
-    then
-      # Using the discovered r_validatorPubkey collect the validator performance statistics
-      bufStats=$(jq ".data.statistics.\"$r_validatorPubkey\"" <<< $allBufStats)
 
-      read r_ratingModifier r_shardId r_tempRating r_numLeaderSuccess r_numLeaderFailure r_numValidatorSuccess r_numValidatorFailure r_numValidatorIgnoredSignatures r_rating r_totalNumLeaderSuccess r_totalNumLeaderFailure r_totalNumValidatorSuccess r_totalNumValidatorFailure r_totalNumValidatorIgnoredSignatures \
-      < <(echo $(jq '.ratingModifier, .shardId, .tempRating, .numLeaderSuccess, .numLeaderFailure, .numValidatorSuccess, .numValidatorFailure, .numValidatorIgnoredSignatures, .rating, .totalNumLeaderSuccess, .totalNumLeaderFailure, .totalNumValidatorSuccess, .totalNumValidatorFailure, .totalNumValidatorIgnoredSignatures' -r <<< $bufStats))
-
-      printf "%s\n" "elrond_node_r_rating_modifier{$metricLabels} $r_ratingModifier" \
-              "elrond_node_r_shard_id{$metricLabels} $r_shardId" \
-              "elrond_node_r_epoch_rating{$metricLabels} $r_tempRating" \
-              "elrond_node_r_epoch_leader_success{$metricLabels} $r_numLeaderSuccess" \
-              "elrond_node_r_epoch_leader_failure{$metricLabels} $r_numLeaderFailure" \
-              "elrond_node_r_epoch_validator_success{$metricLabels} $r_numValidatorSuccess" \
-              "elrond_node_r_epoch_validator_failure{$metricLabels} $r_numValidatorFailure" \
-              "elrond_node_r_epoch_validator_ignored_signatures{$metricLabels} $r_numValidatorIgnoredSignatures" \
-              "elrond_node_r_total_rating{$metricLabels} $r_rating" \
-              "elrond_node_r_total_leader_success{$metricLabels} $r_totalNumLeaderSuccess" \
-              "elrond_node_r_total_leader_failure{$metricLabels} $r_totalNumLeaderFailure" \
-              "elrond_node_r_total_validator_success{$metricLabels} $r_totalNumValidatorSuccess" \
-              "elrond_node_r_total_validator_failure{$metricLabels} $r_totalNumValidatorFailure" \
-              "elrond_node_r_total_validator_ignored_signatures{$metricLabels} $r_totalNumValidatorIgnoredSignatures"
-    fi
+    # if [[ $r_peerType != "observer" ]]
+    # then
+    #   # Using the discovered r_validatorPubkey collect the validator performance statistics
+    #   bufStats=$(jq ".data.statistics.\"$r_validatorPubkey\"" <<< $allBufStats)
+    #
+    #   read r_ratingModifier r_shardId r_tempRating r_numLeaderSuccess r_numLeaderFailure r_numValidatorSuccess r_numValidatorFailure r_numValidatorIgnoredSignatures r_rating r_totalNumLeaderSuccess r_totalNumLeaderFailure r_totalNumValidatorSuccess r_totalNumValidatorFailure r_totalNumValidatorIgnoredSignatures \
+    #   < <(echo $(jq '.ratingModifier, .shardId, .tempRating, .numLeaderSuccess, .numLeaderFailure, .numValidatorSuccess, .numValidatorFailure, .numValidatorIgnoredSignatures, .rating, .totalNumLeaderSuccess, .totalNumLeaderFailure, .totalNumValidatorSuccess, .totalNumValidatorFailure, .totalNumValidatorIgnoredSignatures' -r <<< $bufStats))
+    #
+    #   printf "%s\n" "elrond_node_r_rating_modifier{$metricLabels} $r_ratingModifier" \
+    #           "elrond_node_r_shard_id{$metricLabels} $r_shardId" \
+    #           "elrond_node_r_epoch_rating{$metricLabels} $r_tempRating" \
+    #           "elrond_node_r_epoch_leader_success{$metricLabels} $r_numLeaderSuccess" \
+    #           "elrond_node_r_epoch_leader_failure{$metricLabels} $r_numLeaderFailure" \
+    #           "elrond_node_r_epoch_validator_success{$metricLabels} $r_numValidatorSuccess" \
+    #           "elrond_node_r_epoch_validator_failure{$metricLabels} $r_numValidatorFailure" \
+    #           "elrond_node_r_epoch_validator_ignored_signatures{$metricLabels} $r_numValidatorIgnoredSignatures" \
+    #           "elrond_node_r_total_rating{$metricLabels} $r_rating" \
+    #           "elrond_node_r_total_leader_success{$metricLabels} $r_totalNumLeaderSuccess" \
+    #           "elrond_node_r_total_leader_failure{$metricLabels} $r_totalNumLeaderFailure" \
+    #           "elrond_node_r_total_validator_success{$metricLabels} $r_totalNumValidatorSuccess" \
+    #           "elrond_node_r_total_validator_failure{$metricLabels} $r_totalNumValidatorFailure" \
+    #           "elrond_node_r_total_validator_ignored_signatures{$metricLabels} $r_totalNumValidatorIgnoredSignatures"
+    # fi
   done
 fi
 
