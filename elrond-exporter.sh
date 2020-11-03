@@ -17,9 +17,6 @@ REMOTE_METRICS=1
 OBSERVER_URL="https://api.elrond.com"
 IDENTITY="YOUR-KEYBASE-IDENTITY-HERE" # Edit this with your own identity
 
-OBSERVER_URL="https://api-testnet.elrond.com"
-IDENTITY="easy2stake" # Edit this with your own identity
-
 # LOCAL_NODES: Array containing the nodes you want to generate local metrics from.
 if [[ -z "$LOCAL_NODES" ]]; then LOCAL_METRICS=0; fi
 if [[ -z "$IDENTITY" ]]; then
