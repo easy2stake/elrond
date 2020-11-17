@@ -4,28 +4,10 @@
 # Remote Metrics: Recommended to run at a 1second/node. Ex: Loop each 10 seconds if you scrape metrics for 10 nodes.
 # This is for safety. Normally it should scrape 10 nodes in under 5 secs.
 
-
-#LOCAL_METRICS=${E_LOCAL_METRICS:=0}
-#LOCAL_NODES=$E_LOCAL_NODES
-#REMOTE_METRICS=${E_REMOTE_METRICS:=1}
-#IDENTITY=$E_IDENTITY
-#OBSERVER_URL=${E_OBSERVER_URL:="https://api.elrond.com"}
-
-LOCAL_METRICS=0 #Enable local metrics
-LOCAL_NODES=(http://rpc-url:8080 http://rpc-url:8081)  #Insert your own nodes inside the paranthesis
-REMOTE_METRICS=1
-OBSERVER_URL="https://api.elrond.com"
-IDENTITY="YOUR-KEYBASE-IDENTITY-HERE" # Edit this with your own identity
-
-OBSERVER_URL="https://api-testnet.elrond.com"
-
-
-# LOCAL_NODES: Array containing the nodes you want to generate local metrics from.
-if [[ -z "$LOCAL_NODES" ]]; then LOCAL_METRICS=0; fi
-if [[ -z "$IDENTITY" ]]; then
-  echo "Please set the IDENTITY variable."
-  exit 1
-fi
+# OBSERVER_URL="https://api-testnet.elrond.com"
+# OBSERVER_URL="https://api.elrond.com"
+# OBSERVER_URL="80.241.217.149:8080"
+OBSERVER_URL="144.91.127.3:8081"
 
 # Usage: setMetaLabel $shardId. It will echo "meta" or $shardId given te shardId
 setMetaLabel (){
@@ -35,173 +17,82 @@ setMetaLabel (){
   else echo $1
   fi
 }
+### Observer data
+status=$(curl -s ${OBSERVER_URL}/node/status)
+read obs_displayName obs_nodeType obs_syncStatus obs_chainID obs_appVersion obs_epochNumber obs_shardID obs_validatorPubkey obs_peers obs_validators obs_nodes obs_nonce obs_shardHeadersInPool obs_shards obs_liveValidators obs_netRxBps obs_netRxBpsPeak obs_netTxBps obs_NetTxBpsPeak obs_erdPeakTPS obs_erdNumShards \
+< <(echo $(jq '.data.metrics.erd_node_display_name, .data.metrics.erd_node_type, .data.metrics.erd_is_syncing, .data.metrics.erd_chain_id, .data.metrics.erd_app_version, .data.metrics.erd_epoch_number // 0, .data.metrics.erd_shard_id // 0, .data.metrics.erd_public_key_block_sign, .data.metrics.erd_num_connected_peers // 0, .data.metrics.erd_num_validators // 0, .data.metrics.erd_connected_nodes // 0, .data.metrics.erd_nonce // 0, .data.metrics.erd_num_shard_headers_from_pool // 0, .data.metrics.erd_num_shards_without_meta, .data.metrics.erd_live_validator_nodes // 0, .data.metrics.erd_network_recv_bps // 0, .data.metrics.erd_network_recv_bps_peak // 0, .data.metrics.erd_network_sent_bps // 0, .data.metrics.erd_network_sent_bps_peak // 0, .data.metrics.erd_peak_tps // 0, .data.metrics.erd_num_shards_without_meta // 0' -r <<< $status))
 
-if [[ $LOCAL_METRICS -eq 1 ]]
-then
-  # Defining the metrics used
-  echo "# HELP elrond_node_type Elrond node type."
-  echo "# TYPE elrond_node_type gauge"
-  echo "# HELP elrond_node_sync_status 0=in sync 1=syncing."
-  echo "# TYPE elrond_node_sync_status gauge"
-  echo "# HELP elrond_node_chain_id The chain ID stripped by all characters but numbers."
-  echo "# TYPE elrond_node_chain_id gauge"
-  echo "# HELP elrond_node_epoch_number The epoch number."
-  echo "# TYPE elrond_node_epoch_number counter"
-  echo "# HELP elrond_node_shard_id The shard id. Meta shard is always 4294967295."
-  echo "# TYPE elrond_node_shard_id gauge"
-  echo "# HELP elrond_node_peers The number of peers the node is connected to."
-  echo "# TYPE elrond_node_peers gauge"
-  echo "# HELP elrond_node_validators The number of validators reported by the queried node."
-  echo "# TYPE elrond_node_validators gauge"
-  echo "# HELP elrond_node_nodes The total number of elrond nodes reported by the queried node."
-  echo "# TYPE elrond_node_nodes gauge"
-  echo "# HELP elrond_node_nonce ERD nonce"
-  echo "# TYPE elrond_node_nonce counter"
-  echo "# HELP elrond_node_shard_headers_in_pool ERD shard headers in pool"
-  echo "# TYPE elrond_node_shard_headers_in_pool gauge"
-  echo "# HELP elrond_node_shards_winthout_meta ERD number of shards without meta"
-  echo "# TYPE elrond_node_shards_winthout_meta gauge"
-  echo "# HELP elrond_node_live_validators The total number of live validators"
-  echo "# TYPE elrond_node_live_validators gauge"
-  echo "# HELP elrond_node_net_rx_bps Node incoming network traffic [bps]"
-  echo "# TYPE elrond_node_net_rx_bps gauge"
-  echo "# HELP elrond_node_net_rx_bps_peak Node incoming peak network traffic [bps]"
-  echo "# TYPE elrond_node_net_rx_bps_peak gauge"
-  echo "# HELP elrond_node_net_tx_bps Node outgoing network traffic [bps]"
-  echo "# TYPE elrond_node_net_tx_bps gauge"
-  echo "# HELP elrond_node_net_tx_bps_peak Node outgoing peak network traffic [bps]"
-  echo "# TYPE elrond_node_net_tx_bps_peak gauge"
+shardIDlabel=$(setMetaLabel $r_receivedShardID)
+metricLabels="displayName=\"$obs_displayName\",nodeType=\"$obs_nodeType\",shardID=\"$obs_shardID\",validatorPubkey=\"$obs_validatorPubkey\",syncStatus=\"$obs_syncStatus\""
+# Exporting observer prometheus merics
+printf "%s\n" "elrond_obs_sync_status{$metricLabels} $obs_syncStatus" \
+              "elrond_obs_epochNumber{$metricLabels} $obs_epochNumber"
 
-  # Local metrics
-  for i in "${LOCAL_NODES[@]}"
-  do
-    status=$(curl -s $i/node/status)
-    read displayName nodeType syncStatus chainID appVersion epochNumber shardID validatorPubkey peers validators nodes nonce shardHeadersInPool shards liveValidators netRxBps netRxBpsPeak netTxBps NetTxBpsPeak erdPeakTPS erdNumShards \
-    < <(echo $(jq '.data.metrics.erd_node_display_name, .data.metrics.erd_node_type, .data.metrics.erd_is_syncing, .data.metrics.erd_chain_id, .data.metrics.erd_app_version, .data.metrics.erd_epoch_number // 0, .data.metrics.erd_shard_id // 0, .data.metrics.erd_public_key_block_sign, .data.metrics.erd_num_connected_peers // 0, .data.metrics.erd_num_validators // 0, .data.metrics.erd_connected_nodes // 0, .data.metrics.erd_nonce // 0, .data.metrics.erd_num_shard_headers_from_pool // 0, .data.metrics.erd_num_shards_without_meta, .data.metrics.erd_live_validator_nodes // 0, .data.metrics.erd_network_recv_bps // 0, .data.metrics.erd_network_recv_bps_peak // 0, .data.metrics.erd_network_sent_bps // 0, .data.metrics.erd_network_sent_bps_peak // 0, .data.metrics.erd_peak_tps // 0, .data.metrics.erd_num_shards_without_meta // 0' -r <<< $status))
 
-    # Set a friendly name for the Meta shard to be used as metricLabels
-    shardIDlabel=$(setMetaLabel $shardID)
+# Remote metrics - stats that are seen from a different node but itself
+# Collect all elrond data and store it inside buffers avoiding unecessary calls
+bufHB=$(curl -m 5 -s ${OBSERVER_URL}/node/heartbeatstatus)
+allBufStats=$(curl -m 5 -s ${OBSERVER_URL}/validator/statistics) #Should curl only once
+####################### ALL NODES #######################
+allNodesHB=$(jq ".data.heartbeats[]" -c <<< $bufHB)
 
-    # Set metricLabels variable
-    metricLabels="displayName=\"$displayName\",nodeType=\"$nodeType\",shardID=\"$shardIDlabel\",validatorPubkey=\"$validatorPubkey\""
-    metricsLabels_observer="displayName=\"$displayName\",nodeType=\"observer\",shardID=\"$shardIDlabel\",validatorPubkey=\"$validatorPubkey\""
-    metricsLabels_validator="displayName=\"$displayName\",nodeType=\"validator\",shardID=\"$shardIDlabel\",validatorPubkey=\"$validatorPubkey\""
+for i in $(echo "$allNodesHB" | jq -r '. | @base64')
+do
+  i=$(base64 --decode <<< $i)
+  #if [[ -z $(jq '.identity' -r <<< $i) || $(jq '.identity' -r <<< $i) == "null" ]]; then continue; fi
+  #if [[ -z $(jq '.nodeDisplayName' -r <<< $i) || $(jq '.nodeDisplayName' -r <<< $i) == "null" ]]; then continue; fi
 
-    # Make metrics Prometheus compliant
-    p_chainID=$(echo $chainID | tr -d "." | tr -d "v")
+  #echo ""
+  #echo $i
+  #echo "=========================================================="
 
-    #Prometheus metrics
-    case $nodeType in
-     "validator")
-        printf "%s\n" "elrond_node_type{$metricLabels} 1" \
-                      "elrond_node_type{$metricsLabels_observer} 0"
-        ;;
-     "observer")
-        printf "%s\n" "elrond_node_type{$metricLabels} 1" \
-                      "elrond_node_type{$metricsLabels_validator} 0"
-        ;;
-    esac
+  read  r_validatorPubkey r_isActive r_totalUpTimeSec r_totalDownTimeSec r_peerType r_receivedShardID r_computedShardID r_nonce\
+  < <(echo $(jq '.publicKey, .isActive, .totalUpTimeSec, .totalDownTimeSec, .peerType, .receivedShardID, .computedShardID, .nonce' -r <<< $i))
 
-    printf "%s\n" "elrond_node_sync_status{$metricLabels} $syncStatus" \
-                  "elrond_node_chain_id{$metricLabels} $p_chainID" \
-                  "elrond_node_epoch_number{$metricLabels} $epochNumber" \
-                  "elrond_node_shard_id{$metricLabels} $shardID" \
-                  "elrond_node_peers{$metricLabels} $peers" \
-                  "elrond_node_validators{$metricLabels} $validators" \
-                  "elrond_node_nodes{$metricLabels} $nodes" \
-                  "elrond_node_nonce{$metricLabels} $nonce" \
-                  "elrond_node_shard_headers_in_pool{$metricLabels} $shardHeadersInPool" \
-                  "elrond_node_shards_winthout_meta{$metricLabels} $shards" \
-                  "elrond_node_live_validators{$metricLabels} $liveValidators" \
-                  "elrond_node_net_rx_bps{$metricLabels} $netRxBps" \
-                  "elrond_node_net_rx_bps_peak{$metricLabels} $netRxBpsPeak" \
-                  "elrond_node_net_tx_bps{$metricLabels} $netTxBps" \
-                  "elrond_node_net_tx_bps_peak{$metricLabels} $NetTxBpsPeak" \
-                  "elrond_node_num_shards_wo_meta{$metricLabels} $erdNumShards"
-  done
-fi
+  read r_displayName < <(echo $(jq '.nodeDisplayName // "noName"' -r <<< $i))
+  read r_identity < <(echo $(jq '.identity // "noID"' -r <<< $i))
 
-if [[ $REMOTE_METRICS -eq 1 ]]
-then
+  # r_maxInactiveTime=$(jq '.maxInactiveTime' -r <<< $i) #The actual format is not prometheus friendly
+  # r_peerType #Possible values are: "eligible", "observer", "waiting"
+  # r_receivedShardID #What the current observer node received from this peer
+  # r_computedShardID #What the current observer node knows abut this peer
+  # Hint: r_receivedShardID must EQUAL r_computedShardID when r_peerType=eligible. A specific metric can be added here reflecting this. (elrond_node_shardID)
 
-  # Remote metrics - stats that are seen from a different node but itself
-  # Collect all elrond data and store it inside buffers avoiding unecessary calls
-  bufHB=$(curl -m 5 -s ${OBSERVER_URL}/node/heartbeatstatus)
-  allBufStats=$(curl -m 5 -s ${OBSERVER_URL}/validator/statistics) #Should curl only once
-  ####################### ALL NODES #######################
-  allNodesHB=$(jq ".data.heartbeats[]" -c <<< $bufHB)
+  # Prepare the metricLabels
+  shardIDlabel=$(setMetaLabel $r_receivedShardID)
+  metricLabels="displayName=\"$r_displayName\",nodeType=\"$r_peerType\",shardID=\"$shardIDlabel\",validatorPubkey=\"$r_validatorPubkey\",identity=\"$r_identity\",isActive=\"$r_isActive\""
 
-  for i in $(echo "$allNodesHB")
-  do
-    if [[ -z $(jq '.identity' -r <<< $i) || $(jq '.identity' -r <<< $i) == "null" ]]; then continue; fi
-    if [[ -z $(jq '.nodeDisplayName' -r <<< $i) || $(jq '.nodeDisplayName' -r <<< $i) == "null" ]]; then continue; fi
+  # Exporting generic prometheus merics
+  printf "%s\n" "elrond_node_r_total_uptime_sec{$metricLabels} $r_totalUpTimeSec" \
+                "elrond_node_r_total_downtime_sec{$metricLabels} $r_totalDownTimeSec" \
+                "elrond_node_r_received_shard_id{$metricLabels} $r_receivedShardID" \
+                "elrond_node_r_computed_shard_id{$metricLabels} $r_computedShardID" \
+                "elrond_node_r_nonce{$metricLabels} $r_nonce"
 
-    read  r_validatorPubkey r_isActive r_totalUpTimeSec r_totalDownTimeSec r_peerType r_receivedShardID r_computedShardID r_nonce\
-    < <(echo $(jq '.publicKey, .isActive, .totalUpTimeSec, .totalDownTimeSec, .peerType, .receivedShardID, .computedShardID, .nonce' -r <<< $i))
+  #echo "elrond_node_r_max_inactive_time{$metricLabels} $r_maxInactiveTime" #Must be converted to seconds. The actual format is not prometheus friendly
+  # Exporting validator prometheus merics. Do not calculate for observers.
 
-    read r_displayName r_identity\
-    < <(echo $(jq '.nodeDisplayName, .identity' -r <<< $i))
-
-    #r_isActive=$(jq '.isActive' -r <<< $i) # This echoes true or false. Must convert to 1/0
-    grep -i true <<< $r_isActive 2>&1 > /dev/null
-    if [[ $? -eq 0 ]]; then int_r_isActive=1
-    else int_r_isActive=0
-    fi
-
-    # r_maxInactiveTime=$(jq '.maxInactiveTime' -r <<< $i) #The actual format is not prometheus friendly
-    # r_peerType #Possible values are: "eligible", "observer", "waiting"
-    # r_receivedShardID #What the current observer node received from this peer
-    # r_computedShardID #What the current observer node knows abut this peer
-    # Hint: r_receivedShardID must EQUAL r_computedShardID when r_peerType=eligible. A specific metric can be added here reflecting this. (elrond_node_shardID)
-
-    # Prepare the metricLabels
-    shardIDlabel=$(setMetaLabel $r_receivedShardID)
-    metricLabels="displayName=\"$r_displayName\",nodeType=\"$r_peerType\",shardID=\"$shardIDlabel\",validatorPubkey=\"$r_validatorPubkey\",identity=\"$r_identity\""
-
-    # Exporting generic prometheus merics
-    printf "%s\n" "elrond_node_r_is_active{$metricLabels} $int_r_isActive" \
-                  "elrond_node_r_total_uptime_sec{$metricLabels} $r_totalUpTimeSec" \
-                  "elrond_node_r_total_downtime_sec{$metricLabels} $r_totalDownTimeSec" \
-                  "elrond_node_r_received_shard_id{$metricLabels} $r_receivedShardID" \
-                  "elrond_node_r_computed_shard_id{$metricLabels} $r_computedShardID" \
-                  "elrond_node_r_nonce{$metricLabels} $r_nonce"
-
-    #echo "elrond_node_r_max_inactive_time{$metricLabels} $r_maxInactiveTime" #Must be converted to seconds. The actual format is not prometheus friendly
-    # Exporting validator prometheus merics. Do not calculate for observers.
-
-    # if [[ $r_peerType != "observer" ]]
-    # then
-    #   # Using the discovered r_validatorPubkey collect the validator performance statistics
-    #   bufStats=$(jq ".data.statistics.\"$r_validatorPubkey\"" <<< $allBufStats)
-    #
-    #   read r_ratingModifier r_shardId r_tempRating r_numLeaderSuccess r_numLeaderFailure r_numValidatorSuccess r_numValidatorFailure r_numValidatorIgnoredSignatures r_rating r_totalNumLeaderSuccess r_totalNumLeaderFailure r_totalNumValidatorSuccess r_totalNumValidatorFailure r_totalNumValidatorIgnoredSignatures \
-    #   < <(echo $(jq '.ratingModifier, .shardId, .tempRating, .numLeaderSuccess, .numLeaderFailure, .numValidatorSuccess, .numValidatorFailure, .numValidatorIgnoredSignatures, .rating, .totalNumLeaderSuccess, .totalNumLeaderFailure, .totalNumValidatorSuccess, .totalNumValidatorFailure, .totalNumValidatorIgnoredSignatures' -r <<< $bufStats))
-    #
-    #   printf "%s\n" "elrond_node_r_rating_modifier{$metricLabels} $r_ratingModifier" \
-    #           "elrond_node_r_shard_id{$metricLabels} $r_shardId" \
-    #           "elrond_node_r_epoch_rating{$metricLabels} $r_tempRating" \
-    #           "elrond_node_r_epoch_leader_success{$metricLabels} $r_numLeaderSuccess" \
-    #           "elrond_node_r_epoch_leader_failure{$metricLabels} $r_numLeaderFailure" \
-    #           "elrond_node_r_epoch_validator_success{$metricLabels} $r_numValidatorSuccess" \
-    #           "elrond_node_r_epoch_validator_failure{$metricLabels} $r_numValidatorFailure" \
-    #           "elrond_node_r_epoch_validator_ignored_signatures{$metricLabels} $r_numValidatorIgnoredSignatures" \
-    #           "elrond_node_r_total_rating{$metricLabels} $r_rating" \
-    #           "elrond_node_r_total_leader_success{$metricLabels} $r_totalNumLeaderSuccess" \
-    #           "elrond_node_r_total_leader_failure{$metricLabels} $r_totalNumLeaderFailure" \
-    #           "elrond_node_r_total_validator_success{$metricLabels} $r_totalNumValidatorSuccess" \
-    #           "elrond_node_r_total_validator_failure{$metricLabels} $r_totalNumValidatorFailure" \
-    #           "elrond_node_r_total_validator_ignored_signatures{$metricLabels} $r_totalNumValidatorIgnoredSignatures"
-    # fi
-  done
-fi
-
-#Other metrics to consider
-  #erd_cpu_load_percent
-  #erd_mem_load_percent
-  #erd_mem_total
-  #erd_num_metachain_nodes
-  #erd_num_nodes_in_shard
-  #erd_num_transactions_processed
-  #erd_peak_tps
-  #erd_current_block_size
-  #erd_app_version
+  # if [[ $r_peerType != "observer" ]]
+  # then
+  #   # Using the discovered r_validatorPubkey collect the validator performance statistics
+  #   bufStats=$(jq ".data.statistics.\"$r_validatorPubkey\"" <<< $allBufStats)
+  #
+  #   read r_ratingModifier r_shardId r_tempRating r_numLeaderSuccess r_numLeaderFailure r_numValidatorSuccess r_numValidatorFailure r_numValidatorIgnoredSignatures r_rating r_totalNumLeaderSuccess r_totalNumLeaderFailure r_totalNumValidatorSuccess r_totalNumValidatorFailure r_totalNumValidatorIgnoredSignatures \
+  #   < <(echo $(jq '.ratingModifier, .shardId, .tempRating, .numLeaderSuccess, .numLeaderFailure, .numValidatorSuccess, .numValidatorFailure, .numValidatorIgnoredSignatures, .rating, .totalNumLeaderSuccess, .totalNumLeaderFailure, .totalNumValidatorSuccess, .totalNumValidatorFailure, .totalNumValidatorIgnoredSignatures' -r <<< $bufStats))
+  #
+  #   printf "%s\n" "elrond_node_r_rating_modifier{$metricLabels} $r_ratingModifier" \
+  #           "elrond_node_r_shard_id{$metricLabels} $r_shardId" \
+  #           "elrond_node_r_epoch_rating{$metricLabels} $r_tempRating" \
+  #           "elrond_node_r_epoch_leader_success{$metricLabels} $r_numLeaderSuccess" \
+  #           "elrond_node_r_epoch_leader_failure{$metricLabels} $r_numLeaderFailure" \
+  #           "elrond_node_r_epoch_validator_success{$metricLabels} $r_numValidatorSuccess" \
+  #           "elrond_node_r_epoch_validator_failure{$metricLabels} $r_numValidatorFailure" \
+  #           "elrond_node_r_epoch_validator_ignored_signatures{$metricLabels} $r_numValidatorIgnoredSignatures" \
+  #           "elrond_node_r_total_rating{$metricLabels} $r_rating" \
+  #           "elrond_node_r_total_leader_success{$metricLabels} $r_totalNumLeaderSuccess" \
+  #           "elrond_node_r_total_leader_failure{$metricLabels} $r_totalNumLeaderFailure" \
+  #           "elrond_node_r_total_validator_success{$metricLabels} $r_totalNumValidatorSuccess" \
+  #           "elrond_node_r_total_validator_failure{$metricLabels} $r_totalNumValidatorFailure" \
+  #           "elrond_node_r_total_validator_ignored_signatures{$metricLabels} $r_totalNumValidatorIgnoredSignatures"
+  # fi
+done
