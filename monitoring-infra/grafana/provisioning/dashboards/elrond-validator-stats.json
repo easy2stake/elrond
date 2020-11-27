@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 4,
-  "iteration": 1605649693009,
+  "id": 2,
+  "iteration": 1606465735530,
   "links": [],
   "panels": [
     {
@@ -137,6 +137,7 @@
         "defaults": {
           "custom": {},
           "mappings": [],
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -638,6 +639,7 @@
       "dashes": false,
       "datasource": null,
       "decimals": null,
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -700,7 +702,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "topk(30,elrond_node_r_nonce{shardID=\"meta\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
+          "expr": "bottomk(30,elrond_node_r_nonce{shardID=\"meta\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{ displayName }}, {{nodeType}}, Shard: {{shardID}}",
@@ -711,7 +713,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Shard META  - Validator Nonce",
+      "title": "Shard META  - Validator Nonce (Last 30 Validators by filters)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -816,7 +818,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "topk(30,elrond_node_r_nonce{shardID=\"0\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
+          "expr": "bottomk(30,elrond_node_r_nonce{shardID=\"0\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{ displayName }}, {{nodeType}}, Shard: {{shardID}}",
@@ -827,7 +829,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Shard 0 - Validator Nonce",
+      "title": "Shard 0 - Validator Nonce (Last 30 Validators by filters)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -932,7 +934,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "topk(30,elrond_node_r_nonce{shardID=\"1\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
+          "expr": "bottomk(30,elrond_node_r_nonce{shardID=\"1\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{ displayName }}, {{nodeType}}, Shard: {{shardID}}",
@@ -943,7 +945,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Shard 1 - Validator Nonce",
+      "title": "Shard 1 - Validator Nonce (Last 30 Validators by filters)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1048,7 +1050,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "topk(30,elrond_node_r_nonce{shardID=\"2\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
+          "expr": "bottomk(30,elrond_node_r_nonce{shardID=\"2\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{ displayName }}, {{nodeType}}, Shard: {{shardID}}",
@@ -1059,7 +1061,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Shard 2 - Validator Nonce",
+      "title": "Shard 2 - Validator Nonce (Last 30 Validators by filters)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1169,10 +1171,10 @@
         "current": {
           "selected": true,
           "text": [
-            "meta"
+            "All"
           ],
           "value": [
-            "meta"
+            "$__all"
           ]
         },
         "datasource": "Prometheus",
@@ -1199,10 +1201,12 @@
         "current": {
           "selected": true,
           "text": [
-            "eligible"
+            "eligible",
+            "waiting"
           ],
           "value": [
-            "eligible"
+            "eligible",
+            "waiting"
           ]
         },
         "datasource": "Prometheus",
@@ -1257,7 +1261,7 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-1h",
     "to": "now-1m"
   },
   "timepicker": {
@@ -1276,7 +1280,7 @@
     ]
   },
   "timezone": "",
-  "title": "Elrond - Validator Stats",
+  "title": "Elrond Testnet - Validator Stats",
   "uid": "61f8yOhGk",
-  "version": 107
+  "version": 10
 }

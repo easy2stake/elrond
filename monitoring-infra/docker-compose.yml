@@ -68,6 +68,9 @@ services:
       - GF_SECURITY_ADMIN_USER=${ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ACCESS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_NAME="Main Org."
+      - GF_AUTH_ANONYMOUS_ORG_RIKE="Viewer"
     restart: unless-stopped
     expose:
       - 3000
