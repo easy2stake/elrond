@@ -54,6 +54,7 @@ def extract_info(heartbeats_array,statistics_hash)
 			puts "elrond_node_r_total_downtime_sec{#{metricLabels}} #{heartbeat['totalDownTimeSec']}"
 			puts "elrond_node_r_received_shard_id{#{metricLabels}} #{heartbeat['receivedShardID']}"
 			puts "elrond_node_r_computed_shard_id{#{metricLabels}} #{heartbeat['computedShardID']}"
+      puts "elrond_node_r_nonce{#{metricLabels}} #{heartbeat['nonce']}"
 			if heartbeat['peerType'] != "observer"
 			 	extract_statistics(statistics_hash,"#{heartbeat['publicKey']}", metricLabels)
 		    end
