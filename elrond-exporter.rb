@@ -49,7 +49,7 @@ end
 def extract_info(heartbeats_array,statistics_hash,identity)
 	heartbeats_array.each do |heartbeat|
 		# if heartbeat['identity'] == identity
-			metricLabels = "displayName=\"#{heartbeat['nodeDisplayName']}\",nodeType=\"#{heartbeat['peerType']}\",shardID=\"#{setMetaLabel(heartbeat['receivedShardID'])}\",validatorPubkey=\"#{heartbeat['publicKey']}\",identity=\"#{heartbeat['identity']}\""
+			metricLabels = "displayName=\"#{heartbeat['nodeDisplayName']}\",nodeType=\"#{heartbeat['peerType']}\",shardID=\"#{setMetaLabel(heartbeat['receivedShardID'])}\",validatorPubkey=\"#{heartbeat['publicKey']}\",identity=\"#{heartbeat['identity']}\",version=\"#{heartbeat['versionNumber']}\""
 			puts "elrond_node_r_is_active{#{metricLabels}} #{true_false(heartbeat['isActive'])}"
 			puts "elrond_node_r_total_uptime_sec{#{metricLabels}} #{heartbeat['totalUpTimeSec']}"
 			puts "elrond_node_r_total_downtime_sec{#{metricLabels}} #{heartbeat['totalDownTimeSec']}"
@@ -60,7 +60,7 @@ def extract_info(heartbeats_array,statistics_hash,identity)
 		    end
 	    # end
 	end
-end		
+end
 
 
 `/usr/bin/curl --compressed -s https://api.elrond.com/node/heartbeatstatus > heartbeatstatus.json`
