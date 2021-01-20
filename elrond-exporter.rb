@@ -46,9 +46,9 @@ def setMetaLabel(shardid)
 	end
 end
 
-def extract_info(heartbeats_array,statistics_hash)
+def extract_info(heartbeats_array,statistics_hash, network)
 	heartbeats_array.each do |heartbeat|
-			metricLabels = "displayName=\"#{heartbeat['nodeDisplayName']}\",nodeType=\"#{heartbeat['peerType']}\",shardID=\"#{setMetaLabel(heartbeat['receivedShardID'])}\",validatorPubkey=\"#{heartbeat['publicKey']}\",identity=\"#{heartbeat['identity']}\",version=\"#{heartbeat['versionNumber']}\""
+			metricLabels = "displayName=\"#{heartbeat['nodeDisplayName']}\",network=\"#{network}\",nodeType=\"#{heartbeat['peerType']}\",shardID=\"#{setMetaLabel(heartbeat['receivedShardID'])}\",validatorPubkey=\"#{heartbeat['publicKey']}\",identity=\"#{heartbeat['identity']}\",version=\"#{heartbeat['versionNumber']}\""
 			puts "elrond_node_r_is_active{#{metricLabels}} #{true_false(heartbeat['isActive'])}"
 			puts "elrond_node_r_total_uptime_sec{#{metricLabels}} #{heartbeat['totalUpTimeSec']}"
 			puts "elrond_node_r_total_downtime_sec{#{metricLabels}} #{heartbeat['totalDownTimeSec']}"
@@ -106,7 +106,7 @@ def get_metrics(api_url, network, heartbeat_fname, statistics_fname, obstats_fna
   heartbeats_array = heartbeatstatus['data']['heartbeats']
   statistics_hash = statistics['data']['statistics']
 
-  extract_info(heartbeats_array, statistics_hash)
+  extract_info(heartbeats_array, statistics_hash, network)
 
   unless obstats_fname.to_s.strip.empty?
     read_observer_status(api_url, obstats_fname)
