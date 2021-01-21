@@ -57,7 +57,7 @@ def extract_info(heartbeats_array,statistics_hash, network)
       puts "elrond_node_r_nonce{#{metricLabels}} #{heartbeat['nonce']}"
 			if heartbeat['peerType'] != "observer"
 			 	extract_statistics(statistics_hash,"#{heartbeat['publicKey']}", metricLabels)
-		    end
+		  end
 	end
 end
 
@@ -85,6 +85,7 @@ end
 def validate_api_response(json_data)
   if ! valid_json?(json_data)
   	puts "JSON file is not valid"
+    puts json_data
   	exit
   end
 end
@@ -116,7 +117,6 @@ def get_metrics(api_url, network, heartbeat_fname, statistics_fname, obstats_fna
     status_hash = status['data']['metrics']
     extract_obs_status(status_hash, network)
   end
-
 end
 
 api_url = "https://api.elrond.com"
