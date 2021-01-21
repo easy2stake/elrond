@@ -70,13 +70,21 @@ end
 
 
 # The function will read data from API and write response to filename passed as the second argument
-def  read_heartbeatstatus(api_url, fname)
-  `/usr/bin/curl --compressed -s #{api_url}/node/heartbeatstatus > #{fname}`
+def  get_heartbeatstatus(api_url)
+  url="#{api_url}/node/heartbeatstatus"
+  body = HTTParty.get(url).body
+  validate_api_response(body)
+  return body
+  #`/usr/bin/curl --compressed -s #{api_url}/node/heartbeatstatus > #{fname}`
 end
 
 # The function will read data from API and write response to filename passed as the second argument
-def  read_statistics(api_url, fname)
-  `/usr/bin/curl --compressed -s #{api_url}/validator/statistics > #{fname}`
+def  get_statistics(api_url)
+  url="#{api_url}/validator/statistics"
+  body = HTTParty.get(url).body
+  validate_api_response(body)
+  return body
+  #`/usr/bin/curl --compressed -s #{api_url}/validator/statistics > #{fname}`
 end
 
 def read_observer_status(api_url, fname)
@@ -92,21 +100,13 @@ def validate_api_response(json_data)
 end
 
 # Read the Observer stats only if the API allows it. If the variable is empty it will not generate those metrics
-def get_metrics(api_url, network, heartbeat_fname, statistics_fname, obstats_fname="")
-  read_heartbeatstatus(api_url, heartbeat_fname)
-  read_statistics(api_url, statistics_fname)
+def get_metrics(api_url, network, obstats_fname="")
 
-  heartbeatstatus_file = File.read(heartbeat_fname)
-  statistics_file = File.read(statistics_fname)
+  #heartbeatstatus = JSON.parse(get_heartbeatstatus(api_url))
+  #statistics = JSON.parse(get_statistics(api_url))
 
-  validate_api_response(heartbeatstatus_file)
-  validate_api_response(statistics_file)
-
-  heartbeatstatus = JSON.parse(heartbeatstatus_file)
-  statistics = JSON.parse(statistics_file)
-
-  heartbeats_array = heartbeatstatus['data']['heartbeats']
-  statistics_hash = statistics['data']['statistics']
+  heartbeats_array = JSON.parse(get_heartbeatstatus(api_url))['data']['heartbeats']
+  statistics_hash = JSON.parse(get_statistics(api_url))['data']['statistics']
 
   extract_info(heartbeats_array, statistics_hash, network)
 
@@ -122,8 +122,8 @@ end
 
 api_url = "https://api.elrond.com"
 network = "mainnet"
-get_metrics(api_url, network, "hbeat-mainnet.json", "statistics-mainnet.json")
+get_metrics(api_url, network)
 
-api_url = "https://testnet-api.elrond.com"
-network = "testnet"
-get_metrics(api_url, network, "hbeat-testnet.json", "statistics-testnet.json")
+#api_url = "https://testnet-api.elrond.com"
+#network = "testnet"
+#get_metrics(api_url, network)
