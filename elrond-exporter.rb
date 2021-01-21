@@ -9,6 +9,30 @@ rescue
     false
 end
 
+def validate_api_response(json_data)
+  if ! valid_json?(json_data)
+  	puts "JSON file is not valid"
+    puts json_data
+  	exit
+  end
+end
+
+def true_false(condition)
+	if condition
+		return 0
+	else
+		return 1
+	end
+end
+
+def setMetaLabel(shardid)
+	if shardid == 4294967295
+		return "meta"
+	else
+		return shardid
+	end
+end
+
 def extract_statistics(statistics_hash,publickey, metricLabels)
 	statistics_hash.each do |key, value|
 		if key == publickey
@@ -27,23 +51,6 @@ def extract_statistics(statistics_hash,publickey, metricLabels)
 			puts "elrond_node_r_total_validator_failure{#{metricLabels}} #{value['totalNumValidatorFailure']}"
 			puts "elrond_node_r_total_validator_ignored_signatures{#{metricLabels}} #{value['totalNumValidatorIgnoredSignatures']}"
 		end
-	end
-end
-
-
-def true_false(condition)
-	if condition
-		return 0
-	else
-		return 1
-	end
-end
-
-def setMetaLabel(shardid)
-	if shardid == 4294967295
-		return "meta"
-	else
-		return shardid
 	end
 end
 
@@ -68,61 +75,45 @@ def extract_obs_status(status_hash,network)
     puts "elrond_obs_epochNumber{#{metricLabels}} #{status_hash['erd_epoch_number']}"
 end
 
-
-# The function will read data from API and write response to filename passed as the second argument
+# The function will read data from API and return the reults if valid
 def  get_heartbeatstatus(api_url)
   url="#{api_url}/node/heartbeatstatus"
   body = HTTParty.get(url).body
   validate_api_response(body)
   return body
-  #`/usr/bin/curl --compressed -s #{api_url}/node/heartbeatstatus > #{fname}`
 end
 
-# The function will read data from API and write response to filename passed as the second argument
+# The function will read data from API and return the reults if valid
 def  get_statistics(api_url)
   url="#{api_url}/validator/statistics"
   body = HTTParty.get(url).body
   validate_api_response(body)
   return body
-  #`/usr/bin/curl --compressed -s #{api_url}/validator/statistics > #{fname}`
 end
 
-def read_observer_status(api_url, fname)
-  `/usr/bin/curl --compressed -s #{api_url}/node/status > #{fname}`
-end
-
-def validate_api_response(json_data)
-  if ! valid_json?(json_data)
-  	puts "JSON file is not valid"
-    puts json_data
-  	exit
-  end
+# The function will read data from API and return the reults if valid
+def get_observer_status(api_url)
+  url="#{api_url}/node/status"
+  body = HTTParty.get(url).body
+  validate_api_response(body)
+  return body
 end
 
 # Read the Observer stats only if the API allows it. If the variable is empty it will not generate those metrics
-def get_metrics(api_url, network, obstats_fname="")
-
-  #heartbeatstatus = JSON.parse(get_heartbeatstatus(api_url))
-  #statistics = JSON.parse(get_statistics(api_url))
-
+def get_metrics(api_url, network, obstats=false)
   heartbeats_array = JSON.parse(get_heartbeatstatus(api_url))['data']['heartbeats']
   statistics_hash = JSON.parse(get_statistics(api_url))['data']['statistics']
-
   extract_info(heartbeats_array, statistics_hash, network)
 
-  unless obstats_fname.to_s.strip.empty?
-    read_observer_status(api_url, obstats_fname)
-    status_file = File.read(obstats_fname)
-    validate_api_response(status_file)
-    status = JSON.parse(status_file)
-    status_hash = status['data']['metrics']
+  if obstats
+    status_hash = JSON.parse(get_observer_status(api_url))['data']['metrics']
     extract_obs_status(status_hash, network)
   end
 end
 
 api_url = "https://api.elrond.com"
 network = "mainnet"
-get_metrics(api_url, network)
+get_metrics(api_url, network, false)
 
 #api_url = "https://testnet-api.elrond.com"
 #network = "testnet"
