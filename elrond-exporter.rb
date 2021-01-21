@@ -1,5 +1,6 @@
 #!/usr/bin/ruby
 require 'json'
+require "httparty"
 
 def valid_json?(json)
     JSON.parse(json)
