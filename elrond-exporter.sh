@@ -72,7 +72,16 @@ then
   # Local metrics
   for i in "${LOCAL_NODES[@]}"
   do
-    status=$(curl -s $i/node/status)
+    status=$(curl -m 3 -s $i/node/status)
+    ## If curl is failing for whatever the case, create a specific metric to help node identification
+    if [[ $? -ne 0 ]]
+    then
+        >&2 echo "ERROR: Node $i cannot be parsed."
+        metricLabels="displayName=\"$i\""
+        printf "%s\n" "elrond_node_sync_status{$metricLabels} 2"
+        continue
+    fi
+
     read displayName nodeType syncStatus chainID appVersion epochNumber shardID validatorPubkey peers validators nodes nonce shardHeadersInPool shards liveValidators netRxBps netRxBpsPeak netTxBps NetTxBpsPeak erdPeakTPS erdNumShards \
     < <(echo $(jq '.data.metrics.erd_node_display_name, .data.metrics.erd_node_type, .data.metrics.erd_is_syncing, .data.metrics.erd_chain_id, .data.metrics.erd_app_version, .data.metrics.erd_epoch_number // 0, .data.metrics.erd_shard_id // 0, .data.metrics.erd_public_key_block_sign, .data.metrics.erd_num_connected_peers // 0, .data.metrics.erd_num_validators // 0, .data.metrics.erd_connected_nodes // 0, .data.metrics.erd_nonce // 0, .data.metrics.erd_num_shard_headers_from_pool // 0, .data.metrics.erd_num_shards_without_meta, .data.metrics.erd_live_validator_nodes // 0, .data.metrics.erd_network_recv_bps // 0, .data.metrics.erd_network_recv_bps_peak // 0, .data.metrics.erd_network_sent_bps // 0, .data.metrics.erd_network_sent_bps_peak // 0, .data.metrics.erd_peak_tps // 0, .data.metrics.erd_num_shards_without_meta // 0' -r <<< $status))
 
@@ -99,22 +108,22 @@ then
         ;;
     esac
 
-    printf "%s\n" "elrond_node_sync_status{$metricLabels} $syncStatus" \
-                  "elrond_node_chain_id{$metricLabels} $p_chainID" \
-                  "elrond_node_epoch_number{$metricLabels} $epochNumber" \
-                  "elrond_node_shard_id{$metricLabels} $shardID" \
-                  "elrond_node_peers{$metricLabels} $peers" \
-                  "elrond_node_validators{$metricLabels} $validators" \
-                  "elrond_node_nodes{$metricLabels} $nodes" \
-                  "elrond_node_nonce{$metricLabels} $nonce" \
-                  "elrond_node_shard_headers_in_pool{$metricLabels} $shardHeadersInPool" \
-                  "elrond_node_shards_winthout_meta{$metricLabels} $shards" \
-                  "elrond_node_live_validators{$metricLabels} $liveValidators" \
-                  "elrond_node_net_rx_bps{$metricLabels} $netRxBps" \
-                  "elrond_node_net_rx_bps_peak{$metricLabels} $netRxBpsPeak" \
-                  "elrond_node_net_tx_bps{$metricLabels} $netTxBps" \
-                  "elrond_node_net_tx_bps_peak{$metricLabels} $NetTxBpsPeak" \
-                  "elrond_node_num_shards_wo_meta{$metricLabels} $erdNumShards"
+    printf "%s\n" "elrond_node_sync_status{$metricLabels} ${syncStatus:--9}" \
+                  "elrond_node_chain_id{$metricLabels} ${p_chainID:--9}" \
+                  "elrond_node_epoch_number{$metricLabels} ${epochNumber:--9}" \
+                  "elrond_node_shard_id{$metricLabels} ${shardID:--9}" \
+                  "elrond_node_peers{$metricLabels} ${peers:--9}" \
+                  "elrond_node_validators{$metricLabels} ${validators:--9}" \
+                  "elrond_node_nodes{$metricLabels} ${nodes:--9}" \
+                  "elrond_node_nonce{$metricLabels} ${nonce:--9}" \
+                  "elrond_node_shard_headers_in_pool{$metricLabels} ${shardHeadersInPool:--9}" \
+                  "elrond_node_shards_winthout_meta{$metricLabels} ${shards:--9}" \
+                  "elrond_node_live_validators{$metricLabels} ${liveValidators:--9}" \
+                  "elrond_node_net_rx_bps{$metricLabels} ${netRxBps:--9}" \
+                  "elrond_node_net_rx_bps_peak{$metricLabels} ${netRxBpsPeak:--9}" \
+                  "elrond_node_net_tx_bps{$metricLabels} ${netTxBps:--9}" \
+                  "elrond_node_net_tx_bps_peak{$metricLabels} ${NetTxBpsPeak:--9}" \
+                  "elrond_node_num_shards_wo_meta{$metricLabels} ${erdNumShards:--9}"
   done
 fi
 
@@ -149,11 +158,11 @@ then
     metricLabels="displayName=\"$r_displayName\",nodeType=\"$r_peerType\",shardID=\"$shardIDlabel\",validatorPubkey=\"$r_validatorPubkey\",identity=\"$r_identity\""
 
     # Exporting generic prometheus merics
-    printf "%s\n" "elrond_node_r_is_active{$metricLabels} $int_r_isActive" \
-                  "elrond_node_r_total_uptime_sec{$metricLabels} $r_totalUpTimeSec" \
-                  "elrond_node_r_total_downtime_sec{$metricLabels} $r_totalDownTimeSec" \
-                  "elrond_node_r_received_shard_id{$metricLabels} $r_receivedShardID" \
-                  "elrond_node_r_computed_shard_id{$metricLabels} $r_computedShardID"
+    printf "%s\n" "elrond_node_r_is_active{$metricLabels} ${int_r_isActive:--9}" \
+                  "elrond_node_r_total_uptime_sec{$metricLabels} 0" \
+                  "elrond_node_r_total_downtime_sec{$metricLabels} 0" \
+                  "elrond_node_r_received_shard_id{$metricLabels} ${r_receivedShardID:--9}" \
+                  "elrond_node_r_computed_shard_id{$metricLabels} ${r_computedShardID:--9}"
 
     #echo "elrond_node_r_max_inactive_time{$metricLabels} $r_maxInactiveTime" #Must be converted to seconds. The actual format is not prometheus friendly
     # Exporting validator prometheus merics. Do not calculate for observers.
@@ -165,20 +174,20 @@ then
       read r_ratingModifier r_shardId r_tempRating r_numLeaderSuccess r_numLeaderFailure r_numValidatorSuccess r_numValidatorFailure r_numValidatorIgnoredSignatures r_rating r_totalNumLeaderSuccess r_totalNumLeaderFailure r_totalNumValidatorSuccess r_totalNumValidatorFailure r_totalNumValidatorIgnoredSignatures \
       < <(echo $(jq '.ratingModifier, .shardId, .tempRating, .numLeaderSuccess, .numLeaderFailure, .numValidatorSuccess, .numValidatorFailure, .numValidatorIgnoredSignatures, .rating, .totalNumLeaderSuccess, .totalNumLeaderFailure, .totalNumValidatorSuccess, .totalNumValidatorFailure, .totalNumValidatorIgnoredSignatures' -r <<< $bufStats))
 
-      printf "%s\n" "elrond_node_r_rating_modifier{$metricLabels} $r_ratingModifier" \
-              "elrond_node_r_shard_id{$metricLabels} $r_shardId" \
-              "elrond_node_r_epoch_rating{$metricLabels} $r_tempRating" \
-              "elrond_node_r_epoch_leader_success{$metricLabels} $r_numLeaderSuccess" \
-              "elrond_node_r_epoch_leader_failure{$metricLabels} $r_numLeaderFailure" \
-              "elrond_node_r_epoch_validator_success{$metricLabels} $r_numValidatorSuccess" \
-              "elrond_node_r_epoch_validator_failure{$metricLabels} $r_numValidatorFailure" \
-              "elrond_node_r_epoch_validator_ignored_signatures{$metricLabels} $r_numValidatorIgnoredSignatures" \
-              "elrond_node_r_total_rating{$metricLabels} $r_rating" \
-              "elrond_node_r_total_leader_success{$metricLabels} $r_totalNumLeaderSuccess" \
-              "elrond_node_r_total_leader_failure{$metricLabels} $r_totalNumLeaderFailure" \
-              "elrond_node_r_total_validator_success{$metricLabels} $r_totalNumValidatorSuccess" \
-              "elrond_node_r_total_validator_failure{$metricLabels} $r_totalNumValidatorFailure" \
-              "elrond_node_r_total_validator_ignored_signatures{$metricLabels} $r_totalNumValidatorIgnoredSignatures"
+      printf "%s\n" "elrond_node_r_rating_modifier{$metricLabels} ${r_ratingModifier:--9}" \
+              "elrond_node_r_shard_id{$metricLabels} ${r_shardId:--9}" \
+              "elrond_node_r_epoch_rating{$metricLabels} ${r_tempRating:--9}" \
+              "elrond_node_r_epoch_leader_success{$metricLabels} ${r_numLeaderSuccess:--9}" \
+              "elrond_node_r_epoch_leader_failure{$metricLabels} ${r_numLeaderFailure:--9}" \
+              "elrond_node_r_epoch_validator_success{$metricLabels} ${r_numValidatorSuccess:--9}" \
+              "elrond_node_r_epoch_validator_failure{$metricLabels} ${r_numValidatorFailure:--9}" \
+              "elrond_node_r_epoch_validator_ignored_signatures{$metricLabels} ${r_numValidatorIgnoredSignatures:--9}" \
+              "elrond_node_r_total_rating{$metricLabels} ${r_rating:--9}" \
+              "elrond_node_r_total_leader_success{$metricLabels} ${r_totalNumLeaderSuccess:--9}" \
+              "elrond_node_r_total_leader_failure{$metricLabels} ${r_totalNumLeaderFailure:--9}" \
+              "elrond_node_r_total_validator_success{$metricLabels} ${r_totalNumValidatorSuccess:--9}" \
+              "elrond_node_r_total_validator_failure{$metricLabels} ${r_totalNumValidatorFailure:--9}" \
+              "elrond_node_r_total_validator_ignored_signatures{$metricLabels} ${r_totalNumValidatorIgnoredSignatures:--9}"
     fi
   done
 fi
