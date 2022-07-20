@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 require 'json'
-require "httparty"
+require '/var/lib/gems/2.5.0/gems/httparty-0.18.1/lib/httparty'
 
 def valid_json?(json)
     JSON.parse(json)
@@ -58,8 +58,8 @@ def extract_info(heartbeats_array,statistics_hash, network)
 	heartbeats_array.each do |heartbeat|
 			metricLabels = "displayName=\"#{heartbeat['nodeDisplayName']}\",network=\"#{network}\",nodeType=\"#{heartbeat['peerType']}\",shardID=\"#{setMetaLabel(heartbeat['receivedShardID'])}\",validatorPubkey=\"#{heartbeat['publicKey']}\",identity=\"#{heartbeat['identity']}\",isActive=\"#{heartbeat['isActive']}\",version=\"#{heartbeat['versionNumber']}\""
       puts "elrond_node_r_is_active{#{metricLabels}} #{true_false(heartbeat['isActive'])}"
-			puts "elrond_node_r_total_uptime_sec{#{metricLabels}} #{heartbeat['totalUpTimeSec']}"
-			puts "elrond_node_r_total_downtime_sec{#{metricLabels}} #{heartbeat['totalDownTimeSec']}"
+			#puts "elrond_node_r_total_uptime_sec{#{metricLabels}} #{heartbeat['totalUpTimeSec']}"
+			#puts "elrond_node_r_total_downtime_sec{#{metricLabels}} #{heartbeat['totalDownTimeSec']}"
 			puts "elrond_node_r_received_shard_id{#{metricLabels}} #{heartbeat['receivedShardID']}"
 			puts "elrond_node_r_computed_shard_id{#{metricLabels}} #{heartbeat['computedShardID']}"
       puts "elrond_node_r_nonce{#{metricLabels}} #{heartbeat['nonce']}"
@@ -111,10 +111,6 @@ def get_metrics(api_url, network, obstats=false)
   end
 end
 
-api_url = "https://api.elrond.com"
+api_url = "http://192.168.20.41:80"
 network = "mainnet"
-get_metrics(api_url, network, false)
-
-#api_url = "https://testnet-api.elrond.com"
-#network = "testnet"
-#get_metrics(api_url, network)
+get_metrics(api_url, network, true)

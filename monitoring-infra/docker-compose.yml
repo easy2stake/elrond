@@ -59,7 +59,7 @@ services:
 
 
   grafana:
-    image: grafana/grafana:7.1.5
+    image: grafana/grafana:7.5.12
     container_name: grafana
     volumes:
       - grafana_data:/var/lib/grafana
