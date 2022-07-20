@@ -16,8 +16,17 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1606465735530,
-  "links": [],
+  "iteration": 1611243209023,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "tags": [
+        "elrondpublic"
+      ],
+      "type": "dashboards"
+    }
+  ],
   "panels": [
     {
       "datasource": null,
@@ -63,7 +72,7 @@
       "pluginVersion": "7.1.5",
       "targets": [
         {
-          "expr": "elrond_obs_epochNumber",
+          "expr": "elrond_obs_epochNumber{network=\"$network\"}",
           "instant": true,
           "interval": "",
           "legendFormat": "Epoch",
@@ -118,7 +127,7 @@
       "pluginVersion": "7.1.5",
       "targets": [
         {
-          "expr": "count(elrond_node_r_nonce{isActive=\"true\"})",
+          "expr": "count(elrond_node_r_nonce{isActive=\"true\", network=\"$network\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "",
@@ -178,7 +187,7 @@
       "pluginVersion": "7.1.5",
       "targets": [
         {
-          "expr": "count(elrond_node_r_nonce{isActive=\"false\"})",
+          "expr": "count(elrond_node_r_nonce{isActive=\"false\", network=\"$network\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "",
@@ -233,14 +242,14 @@
       "pluginVersion": "7.1.5",
       "targets": [
         {
-          "expr": "count(elrond_node_r_nonce{shardID=\"meta\", isActive=\"true\"})",
+          "expr": "count(elrond_node_r_nonce{shardID=\"meta\", isActive=\"true\", network=\"$network\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "Active",
           "refId": "A"
         },
         {
-          "expr": "count(elrond_node_r_nonce{shardID=\"meta\", isActive=\"false\"})",
+          "expr": "count(elrond_node_r_nonce{shardID=\"meta\", isActive=\"false\", network=\"$network\"})",
           "hide": false,
           "instant": true,
           "interval": "",
@@ -296,14 +305,14 @@
       "pluginVersion": "7.1.5",
       "targets": [
         {
-          "expr": "count(elrond_node_r_nonce{shardID=\"1\", isActive=\"true\"})",
+          "expr": "count(elrond_node_r_nonce{shardID=\"1\", isActive=\"true\", network=\"$network\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "Active",
           "refId": "A"
         },
         {
-          "expr": "count(elrond_node_r_nonce{shardID=\"1\", isActive=\"false\"})",
+          "expr": "count(elrond_node_r_nonce{shardID=\"1\", isActive=\"false\", network=\"$network\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "inactive",
@@ -358,14 +367,14 @@
       "pluginVersion": "7.1.5",
       "targets": [
         {
-          "expr": "count(elrond_node_r_nonce{shardID=\"0\", isActive=\"true\"})",
+          "expr": "count(elrond_node_r_nonce{shardID=\"0\", isActive=\"true\", network=\"$network\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "Active",
           "refId": "A"
         },
         {
-          "expr": "count(elrond_node_r_nonce{shardID=\"0\", isActive=\"false\"})",
+          "expr": "count(elrond_node_r_nonce{shardID=\"0\", isActive=\"false\", network=\"$network\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "inactive",
@@ -420,14 +429,14 @@
       "pluginVersion": "7.1.5",
       "targets": [
         {
-          "expr": "count(elrond_node_r_nonce{shardID=\"2\", isActive=\"true\"})",
+          "expr": "count(elrond_node_r_nonce{shardID=\"2\", isActive=\"true\", network=\"$network\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "Active",
           "refId": "A"
         },
         {
-          "expr": "count(elrond_node_r_nonce{shardID=\"2\", isActive=\"false\"})",
+          "expr": "count(elrond_node_r_nonce{shardID=\"2\", isActive=\"false\", network=\"$network\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "Inactive",
@@ -471,7 +480,7 @@
       },
       "gridPos": {
         "h": 11,
-        "w": 8,
+        "w": 6,
         "x": 0,
         "y": 3
       },
@@ -491,7 +500,7 @@
       "pluginVersion": "7.1.5",
       "targets": [
         {
-          "expr": "topk(15,elrond_node_r_total_downtime_sec{identity=~\"$identity\", shardID=~\"$shardID\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
+          "expr": "topk(15,elrond_node_r_total_downtime_sec{identity=~\"$identity\", shardID=~\"$shardID\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\", network=\"$network\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "{{ displayName }}, {{nodeType}}, Shard: {{shardID}}",
@@ -528,8 +537,8 @@
       },
       "gridPos": {
         "h": 11,
-        "w": 8,
-        "x": 8,
+        "w": 6,
+        "x": 6,
         "y": 3
       },
       "id": 46,
@@ -548,7 +557,7 @@
       "pluginVersion": "7.1.5",
       "targets": [
         {
-          "expr": "topk(15,elrond_node_r_total_uptime_sec{identity=~\"$identity\", shardID=~\"$shardID\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
+          "expr": "topk(15,elrond_node_r_total_uptime_sec{identity=~\"$identity\", shardID=~\"$shardID\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\", network=\"$network\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "{{ displayName }}, {{nodeType}}, Shard: {{shardID}}",
@@ -585,8 +594,8 @@
       },
       "gridPos": {
         "h": 11,
-        "w": 8,
-        "x": 16,
+        "w": 6,
+        "x": 12,
         "y": 3
       },
       "id": 45,
@@ -605,7 +614,7 @@
       "pluginVersion": "7.1.5",
       "targets": [
         {
-          "expr": "bottomk(15,elrond_node_r_nonce{identity=~\"$identity\", shardID=~\"$shardID\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
+          "expr": "bottomk(15,elrond_node_r_nonce{identity=~\"$identity\", shardID=~\"$shardID\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\", network=\"$network\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "{{ displayName }}, {{nodeType}}, Shard: {{shardID}}",
@@ -617,6 +626,75 @@
       "title": "TOP 15 Behind",
       "transformations": [],
       "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null
+          },
+          "links": [],
+          "mappings": [],
+          "noValue": "No inactive nodes",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "light-orange",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 6,
+        "x": 18,
+        "y": 3
+      },
+      "id": 47,
+      "options": {
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "7.1.5",
+      "targets": [
+        {
+          "expr": "elrond_node_r_nonce{isActive=\"false\", network=\"$network\"}",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{ displayName }}, {{nodeType}}, Shard: {{shardID}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Currently Inactive Nodes",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {}
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "displayName",
+                "network",
+                "nodeType",
+                "shardID"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "table"
     },
     {
       "collapsed": false,
@@ -702,7 +780,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "bottomk(30,elrond_node_r_nonce{shardID=\"meta\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
+          "expr": "bottomk(30,elrond_node_r_nonce{shardID=\"meta\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\", network=\"$network\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{ displayName }}, {{nodeType}}, Shard: {{shardID}}",
@@ -818,7 +896,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "bottomk(30,elrond_node_r_nonce{shardID=\"0\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
+          "expr": "bottomk(30,elrond_node_r_nonce{shardID=\"0\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\", network=\"$network\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{ displayName }}, {{nodeType}}, Shard: {{shardID}}",
@@ -934,7 +1012,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "bottomk(30,elrond_node_r_nonce{shardID=\"1\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
+          "expr": "bottomk(30,elrond_node_r_nonce{shardID=\"1\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\", network=\"$network\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{ displayName }}, {{nodeType}}, Shard: {{shardID}}",
@@ -1050,7 +1128,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "bottomk(30,elrond_node_r_nonce{shardID=\"2\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\"})",
+          "expr": "bottomk(30,elrond_node_r_nonce{shardID=\"2\", identity=~\"$identity\", nodeType=~\"$nodeType\", displayName=~\"$displayName\", isActive=~\"$isActive\", network=\"$network\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{ displayName }}, {{nodeType}}, Shard: {{shardID}}",
@@ -1103,7 +1181,9 @@
   "refresh": false,
   "schemaVersion": 26,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "elrondpublic"
+  ],
   "templating": {
     "list": [
       {
@@ -1201,12 +1281,10 @@
         "current": {
           "selected": true,
           "text": [
-            "eligible",
-            "waiting"
+            "eligible"
           ],
           "value": [
-            "eligible",
-            "waiting"
+            "eligible"
           ]
         },
         "datasource": "Prometheus",
@@ -1257,6 +1335,32 @@
         "tagsQuery": "",
         "type": "query",
         "useTags": false
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": false,
+          "text": "mainnet",
+          "value": "mainnet"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(elrond_node_r_nonce,network)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Network",
+        "multi": false,
+        "name": "network",
+        "options": [],
+        "query": "label_values(elrond_node_r_nonce,network)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 5,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       }
     ]
   },
@@ -1280,7 +1384,7 @@
     ]
   },
   "timezone": "",
-  "title": "Elrond Testnet - Validator Stats",
+  "title": "Elrond - Validator Stats",
   "uid": "61f8yOhGk",
-  "version": 10
+  "version": 24
 }
