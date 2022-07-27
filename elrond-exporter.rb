@@ -56,7 +56,7 @@ end
 
 def extract_info(heartbeats_array,statistics_hash, network)
 	heartbeats_array.each do |heartbeat|
-			metricLabels = "displayName=\"#{heartbeat['nodeDisplayName']}\",network=\"#{network}\",nodeType=\"#{heartbeat['peerType']}\",shardID=\"#{setMetaLabel(heartbeat['receivedShardID'])}\",validatorPubkey=\"#{heartbeat['publicKey']}\",identity=\"#{heartbeat['identity']}\",isActive=\"#{heartbeat['isActive']}\",version=\"#{heartbeat['versionNumber']}\""
+			metricLabels = "displayName=\"#{heartbeat['nodeDisplayName'].gsub('"','')}\",network=\"#{network}\",nodeType=\"#{heartbeat['peerType']}\",shardID=\"#{setMetaLabel(heartbeat['receivedShardID'])}\",validatorPubkey=\"#{heartbeat['publicKey']}\",identity=\"#{heartbeat['identity'].gsub('"','')}\",isActive=\"#{heartbeat['isActive']}\",version=\"#{heartbeat['versionNumber']}\""
       puts "elrond_node_r_is_active{#{metricLabels}} #{true_false(heartbeat['isActive'])}"
 			puts "elrond_node_r_total_uptime_sec{#{metricLabels}} #{heartbeat['totalUpTimeSec']}"
 			puts "elrond_node_r_total_downtime_sec{#{metricLabels}} #{heartbeat['totalDownTimeSec']}"
